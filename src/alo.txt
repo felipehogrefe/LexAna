@@ -1,0 +1,5 @@
+class alo{
+		main[]{
+			print["alo mundo"]
+		}
+	}

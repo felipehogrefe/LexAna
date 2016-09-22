@@ -1,0 +1,33 @@
+class sSort{
+	main[]{
+		int n
+		n=read[int]
+		a=array[int,n]
+		for[i=0;i<n;i++]{
+			array[i]=read[int]
+		}
+		a=sSort.shellSort[a]
+		print[a]			
+	}
+	static shellSort[array[] a]{
+		int t = a.length
+		int h = 1
+		while[h<t]{
+			h = h * 3 + 1
+		}
+		h = h / 3
+		int c,j
+		while[h>0]{
+			for[int i = h ; i < t ; i++]{
+				c=a[i]
+				j=i
+				while[j >= h && a[j-h] > c]{
+					a[j] = a[j - h]
+					j = j - h
+				}
+				a[j] = c
+			}
+			h = h / 2
+		}
+	}
+}
