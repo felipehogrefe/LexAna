@@ -39,14 +39,14 @@ public class LexicalAnalyzer {
 		String tValue = "";
 		
 		tStartL = cLine;
-		tStartC = cColumn;
+		settStartC(cColumn);
 		
-		cChar = line.charAt(cColumn);
+		cChar = getLine().charAt(cColumn);
 
 		while (Character.toString(cChar).matches(" ") ||Character.toString(cChar).matches("\t")) {
 			//while criado para pular espaços em branco
 			cChar = nextChar();
-			tStartC++;
+			settStartC(gettStartC() + 1);
 		}
 		
 		if(Character.toString(cChar).matches("\\d")){
@@ -170,7 +170,7 @@ public class LexicalAnalyzer {
 			}
 		}
 		
-		Token t = new Token(tStartL,tStartC,tValue);
+		Token t = new Token(tStartL,gettStartC(),tValue,this);
 		
 		if (t.getCategory().equals(TokenType.COM)) {
 			if (isOver()) {
@@ -183,27 +183,27 @@ public class LexicalAnalyzer {
 	boolean isOver() {
 		if(!lines.isEmpty()){
 			if(cLine<lines.size()){
-				line = lines.get(cLine);
-				line = line.replace('\t', ' ');
-				if (line.substring(cColumn).matches("\\s*")) {
+				setLine(lines.get(cLine));
+				setLine(getLine().replace('\t', ' '));
+				if (getLine().substring(cColumn).matches("\\s*")) {
 					cLine++;
 					cColumn = 0;
 					while (cLine < lines.size()) {
-						line = lines.get(cLine);
-						if (line.matches("\\s*")) {
+						setLine(lines.get(cLine));
+						if (getLine().matches("\\s*")) {
 							cLine++;
 						} else {
 							return true;
 						}
 					}
-				} else if (cColumn < line.length()) {
+				} else if (cColumn < getLine().length()) {
 					return true;
 				} else {
 					cLine++;
 					cColumn = 0;
 					while (cLine < lines.size()) {
-						line = lines.get(cLine);
-						if (line.matches("\\s*")) {
+						setLine(lines.get(cLine));
+						if (getLine().matches("\\s*")) {
 							cLine++;
 						} else {
 							return true;
@@ -217,10 +217,26 @@ public class LexicalAnalyzer {
 
 	private char nextChar() {
 		cColumn ++;
-		if(cColumn<line.length()){
-			return line.charAt(cColumn);
+		if(cColumn<getLine().length()){
+			return getLine().charAt(cColumn);
 		}else{
 			return '\n';
 		}	
+	}
+
+	public String getLine() {
+		return line;
+	}
+
+	public void setLine(String line) {
+		this.line = line;
+	}
+
+	public int gettStartC() {
+		return tStartC;
+	}
+
+	public void settStartC(int tStartC) {
+		this.tStartC = tStartC;
 	}
 }

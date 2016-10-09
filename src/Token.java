@@ -4,38 +4,75 @@ public class Token{
 	public int line;
 	public int col;
 	
-	public Token (int line, int col,String val){
-		this.type = setType(val);
+	public Token (int line, int col,String val,LexicalAnalyzer la){
+		this.type = setType(val,la);
 		this.val = val;
 		this.line = line;
 		this.col = col;
 	}
 	
-	private TokenType setType(String val) {
+	private TokenType setType(String val,LexicalAnalyzer la) {
 		//seta a categoria do token
-		if(checkSEP(val)){
-			return TokenType.SEP;
-		}else if(checkLIT(val)){
-			return TokenType.LIT;
-		}else if(checkOPR(val)){
-			return TokenType.OPR;
+		if(checkNUN(val,la)){
+			return TokenType.OPRNUN;
+		}else if(checkINT(val)){
+			return TokenType.CTNINT;
+		}else if(checkDBL(val)){
+			return TokenType.CTNDBL;
+		}else if(checkLGC(val)){
+			return TokenType.CNTLGC;
+		}else if(checkCHR(val)){
+			return TokenType.CNTCHR;
+		}else if(checkSTR(val)){
+			return TokenType.CNTSTR;
 		}else if(LexTable.lMap.containsKey(val)){
 			//palavras reservadas
-			return TokenType.KEY;
+			return LexTable.lMap.get(val);
 		}else if(checkCOM(val)){
 			return TokenType.COM;
 		}else if(checkID(val)){
 			return TokenType.ID;
 		}
-		
 		return null;
 	}
 	private boolean checkCOM(String val) {
 		if(val.startsWith("//")){
 			//comentario de linha unica
 			return true;
-		}else if(val.startsWith("/**") && val.endsWith("*/")){
-			//comentario de multiplas linhas
+		}
+		return false;
+	}
+	
+	private boolean checkINT(String val){
+		if(val.matches("(\\d)+")){
+			return true;
+		}
+		return false;
+	}
+	
+	private boolean checkDBL(String val){
+		if(val.matches("(\\d)+\\.(\\d)+")){
+			return true;
+		}
+		return false;
+	}
+	
+	private boolean checkLGC(String val){
+		if(val == "true"||val == "false"){
+			return true;
+		}
+		return false;
+	}
+	
+	private boolean checkCHR(String val){
+		if(val.startsWith("\'") && val.endsWith("\'")){
+			return true;
+		}
+		return false;
+	}
+	
+	private boolean checkSTR(String val){
+		if(val.startsWith("\"") && val.endsWith("\"")){
 			return true;
 		}
 		return false;
@@ -63,10 +100,16 @@ public class Token{
 		return false;
 	}
 
-	private boolean checkSEP(String val) {
+	private boolean checkNUN(String val,LexicalAnalyzer la) {
 		//separadores
-		if(val.matches("[{}().;,\\[\\]]")){
-			return true;
+		if(val.equals("-")){
+			Character previousChar = previousNotBlankChar(la);
+			if ((previousChar != null)
+					&& Character.toString(previousChar).matches("[_a-zA-Z0-9]")) {
+				return false;
+			} else {
+				return true;
+			}
 		}
 		return false;
 	}
@@ -86,6 +129,21 @@ public class Token{
 			return true;			
 		}
 		return false;
+	}
+	
+	public Character previousNotBlankChar(LexicalAnalyzer la) {
+
+		int previousColumn = la.gettStartC() - 1;
+		char previousChar;
+
+		while (previousColumn >= 0) {
+			previousChar = la.getLine().charAt(previousColumn);
+			if (previousChar != ' ' && previousChar != '\t') {
+				return previousChar;
+			}
+			previousColumn--;
+		}
+		return null;
 	}
 
 	public TokenType getCategory() {
