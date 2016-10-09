@@ -3,7 +3,7 @@ class sSort{
 		int n
 		n=read[int]
 		a=array[int,n]
-		for[i=0;i<n;i++]{
+		for[i=0;n-1;1]{
 			array[i]=read[int]
 		}
 		a=sSort.shellSort[a]
@@ -18,7 +18,7 @@ class sSort{
 		h = h / 3
 		int c,j
 		while[h>0]{
-			for[int i = h ; i < t ; i++]{
+			for[int i = h ;t-1;1]{
 				c=a[i]
 				j=i
 				while[j >= h && a[j-h] > c]{
